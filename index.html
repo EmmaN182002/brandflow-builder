@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BrandFlow V14 — Visual Funnel Builder</title>
+<style>
+:root{--brand:#29655f;--ink:#17211f;--muted:#687671;--line:#dce5e2;--bg:#f4f7f6;--card:#fff;--accent:#edf6f4;--radius:16px;--font:Inter,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font)}
+.app{min-height:100vh;display:grid;grid-template-columns:235px 1fr 330px}
+aside{background:#fff;border-right:1px solid var(--line);overflow:auto}.brand{padding:20px;font-size:21px;font-weight:900}.brand span{color:var(--brand)}
+.nav{padding:8px}.nav button{width:100%;border:0;background:transparent;text-align:left;padding:11px 12px;border-radius:10px;cursor:pointer;color:var(--ink);margin:2px 0}.nav button:hover,.nav button.active{background:var(--accent);color:var(--brand);font-weight:700}
+.main{display:flex;flex-direction:column;min-width:0}.top{height:62px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:5}.title{font-weight:800}.status{font-size:12px;color:var(--muted)}
+.content{padding:24px;overflow:auto}.step{display:none;max-width:1050px;margin:auto}.step.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-bottom:16px;box-shadow:0 8px 28px #00000008}
+h1{font-size:30px;margin:0 0 8px}h2{font-size:20px;margin:22px 0 9px}h3{margin:0 0 8px}p{line-height:1.55;color:var(--muted)}
+.tag{display:inline-block;padding:6px 9px;background:var(--accent);color:var(--brand);border-radius:999px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.field{margin:14px 0}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff;color:var(--ink)}textarea{min-height:105px;resize:vertical}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:11px 15px;border-radius:10px;cursor:pointer;font-weight:700}.btn:hover{transform:translateY(-1px)}.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}.btn.danger{color:#a33}.navbuttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.choice{padding:13px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:#fff}.choice:hover,.choice.selected{border-color:var(--brand);background:var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px}.result{background:#f8faf9;border:1px solid var(--line);padding:16px;border-radius:12px;margin-top:15px}.copybox{white-space:pre-wrap;background:#fff;border:1px solid var(--line);padding:14px;border-radius:10px}
+.funnel{display:flex;gap:8px;align-items:center;overflow:auto;padding:12px 0}.node{min-width:155px;padding:15px;background:#fff;border:1px solid var(--line);border-radius:12px;text-align:center;font-weight:700}.arrow{font-size:22px;color:var(--brand)}
+.block{padding:14px;border:1px solid var(--line);background:#fff;border-radius:12px;margin:8px 0;cursor:grab}.block.dragging{opacity:.45}.block small{color:var(--muted)}
+.score-row{display:grid;grid-template-columns:1fr 45px;gap:10px;align-items:center;margin:13px 0}.bar{height:8px;background:#e8eeec;border-radius:99px;overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;background:var(--brand)}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:15px}.preview-grid img{width:100%;height:120px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.right{background:#fff;border-left:1px solid var(--line);padding:16px;display:flex;flex-direction:column}.right h4{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}#chat{flex:1;overflow:auto;min-height:300px}.msg{padding:10px 11px;border-radius:12px;background:#f4f7f6;margin:7px 0;font-size:13px;line-height:1.45}.msg.user{background:var(--accent)}.chatrow{display:flex;gap:6px}.chatrow input{min-width:0;flex:1;padding:10px;border:1px solid var(--line);border-radius:10px}.small{font-size:12px}.toast{position:fixed;right:20px;bottom:20px;background:#17211f;color:#fff;padding:12px 15px;border-radius:10px;display:none;z-index:20}
+@media(max-width:1000px){.app{grid-template-columns:190px 1fr}.right{display:none}}@media(max-width:700px){.app{display:block}.nav{display:flex;overflow:auto}.nav button{min-width:max-content}.content{padding:14px}.grid2{grid-template-columns:1fr}.top{position:static}}
+
+.preview-shell{background:#eef2f0;border:1px solid var(--line);border-radius:18px;overflow:hidden}.preview-toolbar{padding:12px 14px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:3}.preview-actions{display:flex;gap:6px;flex-wrap:wrap}.live-frame{margin:20px auto;background:#fff;box-shadow:0 12px 40px #00000012;overflow:auto;transition:.2s}.live-frame.desktop{max-width:980px}.live-frame.mobile{max-width:390px}.live-site{background:#fff;color:#17211f}.live-nav{height:64px;padding:0 28px;border-bottom:1px solid #e7ecea;display:flex;align-items:center;gap:24px;position:sticky;top:0;background:#fffffff2;z-index:2}.live-logo{font-weight:900;margin-right:auto}.live-nav a{color:#52615d;text-decoration:none;font-size:13px}.live-mini{border:0;background:var(--brand);color:#fff;padding:9px 14px;border-radius:9px;font-weight:700}.live-hero{padding:72px 52px;display:grid;grid-template-columns:1.2fr .8fr;gap:35px;align-items:center;background:linear-gradient(135deg,var(--accent),#fff)}.live-kicker{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--brand)}.live-hero h1{font-size:48px;line-height:1.05;margin:12px 0}.live-hero p,.live-section p{font-size:17px;max-width:680px}.live-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.live-cta{border:0;background:var(--brand);color:#fff;padding:14px 20px;border-radius:10px;font-weight:800;cursor:pointer}.live-secondary{border:1px solid var(--line);background:#fff;padding:14px 20px;border-radius:10px;font-weight:800;cursor:pointer}.hero-art{display:flex;justify-content:center}.art-card{width:240px;height:240px;border-radius:28px;background:#fff;border:1px solid var(--line);box-shadow:0 18px 45px #00000012;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}.art-card span{font-size:48px;color:var(--brand)}.art-card b{font-size:22px}.art-card small{color:var(--muted)}.live-img{width:100%;height:300px;object-fit:cover;border-radius:22px}.live-section{padding:68px 52px;text-align:center}.live-section.alt{background:#f7faf9}.live-section h2{font-size:34px;max-width:760px;margin:10px auto}.benefit-grid,.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px;text-align:left}.benefit-grid>div,.steps>div{padding:22px;border:1px solid var(--line);border-radius:15px;background:#fff}.price-card{max-width:360px;margin:28px auto 0;padding:28px;border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;gap:15px;box-shadow:0 10px 30px #0000000a}.price-card strong{font-size:38px}.live-section blockquote{max-width:720px;margin:20px auto;padding:24px;border-left:4px solid var(--brand);background:#fff;text-align:left;font-size:19px;font-style:italic}.live-section details{max-width:700px;margin:10px auto;text-align:left;border:1px solid var(--line);border-radius:10px;padding:15px;background:#fff}.live-section summary{font-weight:800;cursor:pointer}.final-cta{background:var(--brand);color:#fff}.final-cta p{color:#eaf4f2;margin-left:auto;margin-right:auto}.final-cta .live-cta{background:#fff;color:var(--brand)}.live-footer{padding:28px;text-align:center;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}[contenteditable=true]{outline:2px dashed transparent;border-radius:6px}.live-site [contenteditable=true]:hover{outline-color:var(--brand)}@media(max-width:700px){.preview-toolbar{align-items:flex-start;flex-direction:column}.live-hero{grid-template-columns:1fr;padding:45px 24px}.live-hero h1{font-size:36px}.live-section{padding:48px 24px}.benefit-grid,.steps{grid-template-columns:1fr}.live-nav{padding:0 16px}.live-nav a{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="brand">Brand<span>Flow</span><div class="small">V14 Visual Builder</div></div>
+  <div class="nav">
+    <button class="active" onclick="tab('strategy',this)">🧠 Strategy</button>
+    <button onclick="tab('preview',this)">👁️ Live Preview</button>
+    <button onclick="tab('offer',this)">💎 Offer</button>
+    <button onclick="tab('copy',this)">✍️ Funnel Copy</button>
+    <button onclick="tab('blueprint',this)">🗺️ Blueprint</button>
+    <button onclick="tab('builder',this)">🎨 Builder</button>
+    <button onclick="tab('doctor',this)">🔍 Funnel Doctor</button>
+    <button onclick="tab('assets',this)">🖼️ Assets</button>
+    <button onclick="tab('brand',this)">🎨 Brand Kit</button>
+    <button onclick="tab('settings',this)">⚙️ AI Settings</button>
+    <button onclick="tab('export',this)">🚀 Export</button>
+  </div>
+</aside>
+
+<main class="main">
+<header class="top"><div id="title" class="title">Business Strategy</div><div id="status" class="status">Local generator ready</div></header>
+<div class="content">
+
+<section id="strategy" class="step active"></section>
+<section id="preview" class="step"></section>
+<section id="offer" class="step"></section>
+<section id="copy" class="step"></section>
+<section id="blueprint" class="step"></section>
+<section id="builder" class="step"></section>
+<section id="doctor" class="step"></section>
+<section id="assets" class="step"></section>
+<section id="brand" class="step"></section>
+<section id="settings" class="step"></section>
+<section id="export" class="step"></section>
+
+</div></main>
+
+<aside class="right">
+  <h4>AI Funnel Assistant</h4>
+  <div id="chat">
+    <div class="msg">Tell me what you're building, or use the Strategy screen. I can turn your inputs into an offer, freebie, funnel copy package and editable funnel structure.</div>
+  </div>
+  <div class="chatrow"><input id="chatInput" placeholder="e.g. Make the offer more premium"><button class="btn primary" onclick="chat()">Send</button></div>
+  <div style="margin-top:10px"><button class="btn" style="width:100%" onclick="save()">💾 Save Project</button></div>
+</aside>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+const S={business:"",industry:"",product:"",audience:"",problem:"",result:"",price:"",offer:"",inclusions:"",timeline:"",freebie:"",story:"",goal:"",funnel:"",next:"",generated:false,assets:[],aiMode:"local",endpoint:"/api/generate",model:"gpt-5.6-luna",brand:{primary:"#29655f",secondary:"#edf6f4",ink:"#17211f",font:"Inter,Arial,sans-serif"},pages:[],copy:{},emails:[],sections:[]};
+let order=[];
+
+const qs=["business","industry","product","audience","problem","result","price"];
+const labels={business:"Business / brand name",industry:"Industry / niche",product:"What do you sell?",audience:"Who is it for?",problem:"What problem does it solve?",result:"What result does the customer want?",price:"Price / pricing range"};
+
+function esc(x){return String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toast(t){const x=document.getElementById("toast");x.textContent=t;x.style.display="block";setTimeout(()=>x.style.display="none",2600)}
+function setStatus(t){document.getElementById("status").textContent=t}
+function tab(id,btn){document.querySelectorAll(".step").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));if(btn)btn.classList.add("active");document.getElementById("title").textContent=({strategy:"Business Strategy",preview:"Live Funnel Preview",offer:"Offer Builder",copy:"Funnel Copy Package",blueprint:"Funnel Blueprint",builder:"Visual Builder",doctor:"Funnel Doctor",assets:"Assets",brand:"Brand Kit",settings:"AI Settings",export:"Export"})[id]||id;if(id==="strategy")renderStrategy();if(id==="preview")renderPreview();if(id==="offer")renderOffer();if(id==="copy")renderCopy();if(id==="blueprint")renderBlueprint();if(id==="builder")renderBuilder();if(id==="doctor")renderDoctor();if(id==="assets")renderAssets();if(id==="brand")renderBrand();if(id==="settings")renderSettings();if(id==="export")renderExport()}
+function renderStrategy(){document.getElementById("strategy").innerHTML=`<div class="card"><span class="tag">AI Offer-to-Funnel Engine</span><h1>Build the strategy before the design.</h1><p>Enter rough information. BrandFlow can infer the business model, recommend positioning, build the offer, generate a freebie and create the funnel architecture.</p><div class="grid2">${qs.map(k=>`<div class="field"><label>${labels[k]}</label><input id="s_${k}" value="${esc(S[k])}" placeholder="${k==="product"?"e.g. baked sushi, SaaS, consulting":""}"></div>`).join("")}</div><div class="field"><label>Primary goal</label><select id="s_goal"><option>Generate leads</option><option>Book calls</option><option>Sell a product</option><option>Sell a service</option><option>Generate applications</option><option>Sell a course</option><option>SaaS demos</option></select></div><div class="navbuttons"><button class="btn primary" onclick="analyze()">✨ Analyze & Recommend</button><button class="btn" onclick="quickGenerate()">⚡ Generate Complete Funnel Now</button></div></div>`}
+function analyze(){qs.forEach(k=>S[k]=document.getElementById("s_"+k).value.trim());S.goal=document.getElementById("s_goal").value;infer();tab("offer",document.querySelectorAll(".nav button")[2]);}
+function infer(){S.audience=S.audience||"your ideal customers";if(!S.problem)S.problem=defaultProblem();if(!S.result)S.result=defaultResult();S.offer=S.offer||`${S.product||"Your"} ${S.goal==="Sell a product"?"Offer":"Growth Offer"}`;S.funnel=chooseFunnel();S.freebie=S.freebie||freebies()[0]}
+function defaultProblem(){if(S.goal==="Sell a product")return`Customers want ${S.product||"the product"} but need an easy, trustworthy way to choose and buy it.`;if(S.goal==="SaaS demos")return"Sales teams attract too many low-intent or poorly qualified demo requests.";return`People in ${S.audience||"the target market"} struggle to get the result they want without wasting time, money or effort.`}
+function defaultResult(){if(S.goal==="Sell a product")return`Customers can confidently choose and buy ${S.product||"the product"} with a clear value proposition and simple checkout.`;if(S.goal==="SaaS demos")return"More qualified prospects reach the sales team with less wasted time.";return`A clearer path to ${S.result||"the desired outcome"} with a simple next step.`}
+function chooseFunnel(){if(S.goal==="Book calls"||S.goal==="SaaS demos"||S.goal==="Generate applications")return"Application / Booking Funnel";if(S.goal==="Sell a product")return"Lead-to-Sale Ecommerce Funnel";if(S.goal==="Sell a course")return"Lead-to-Course Enrollment Funnel";return"Lead Generation Funnel"}
+function renderOffer(){document.getElementById("offer").innerHTML=`<div class="card"><span class="tag">${esc(S.funnel||"Recommended Funnel")}</span><h1>Offer Builder</h1><p>Approve or edit the AI recommendation before the copywriter runs.</p><div class="field"><label>Recommended Offer Name</label><input id="offerName" value="${esc(S.offer)}"></div><div class="field"><label>Target Customer</label><input id="oaudience" value="${esc(S.audience)}"></div><div class="field"><label>Problem</label><textarea id="oproblem">${esc(S.problem)}</textarea></div><div class="field"><label>Offer Promise / Result</label><textarea id="promise">${esc(S.result)}</textarea></div><div class="field"><label>Offer Inclusions</label><textarea id="incs" placeholder="Separate items with commas">${esc(S.inclusions||"Core product/service, support, bonus, simple next step")}</textarea></div><div class="field"><label>Fulfillment / Timeline</label><input id="time" value="${esc(S.timeline||"Based on your normal fulfillment time")}"></div><div class="field"><label>Price</label><input id="oprice" value="${esc(S.price)}"></div><div class="result"><h3>Offer Validation</h3><div class="score">90/100</div><p>Specific audience + meaningful problem + clear result. Add proof, urgency and risk reversal where appropriate.</p></div><div class="navbuttons"><button class="btn" onclick="tab('strategy',document.querySelectorAll('.nav button')[0])">← Strategy</button><button class="btn primary" onclick="approveOffer()">Approve Offer →</button></div></div>`}
+function approveOffer(){S.offer=document.getElementById("offerName").value.trim();S.audience=document.getElementById("oaudience").value.trim();S.problem=document.getElementById("oproblem").value.trim();S.result=document.getElementById("promise").value.trim();S.inclusions=document.getElementById("incs").value.trim();S.timeline=document.getElementById("time").value.trim();S.price=document.getElementById("oprice").value.trim();renderCopy();tab("copy",document.querySelectorAll(".nav button")[3])}
+function freebies(){if(S.goal==="Sell a product")return["Product Finder Quiz","First Order Discount","Product Selection Guide","VIP Club","Free Sample / Trial","Checklist"];if(S.goal==="SaaS demos")return["Demo Qualification Checklist","Free Funnel Audit","Growth Guide","Mini Training","SaaS Funnel Swipe File"];if(S.goal==="Book calls")return["Free Audit / Assessment","Strategy Checklist","Growth Blueprint","Mini Training","Scorecard"];return["Free Checklist","Audit / Review","Mini Training","Quiz / Assessment","Guide / Blueprint","Strategy Call"]}
+function pickFreebie(el,v){S.freebie=v;el.parentElement.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")}
+function pickNext(el,v){S.next=v;el.parentElement.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")}
+function renderCopy(){document.getElementById("copy").innerHTML=`<div class="card"><span class="tag">AI Funnel Copywriter</span><h1>Build your complete funnel copy 🎯</h1><p>Choose a lead magnet, add your story and conversion path. The AI generator will create the actual page copy, form questions, video script and emails.</p><h2>1. Recommended freebie</h2><div class="choices">${freebies().map(x=>`<div class="choice ${S.freebie===x?'selected':''}" onclick="pickFreebie(this,'${esc(x)}')">${esc(x)}</div>`).join("")}</div><h2>2. Your story</h2><div class="field"><textarea id="story" placeholder="Why did you start? What makes you different? What experience or proof can you share?">${esc(S.story)}</textarea></div><h2>3. What's next?</h2><div class="choices">${["Confirmation Page Only","Book a Strategy / Discovery Call","Apply / Qualify","Shop / Checkout"].map(x=>`<div class="choice ${S.next===x?'selected':''}" onclick="pickNext(this,'${esc(x)}')">${esc(x)}</div>`).join("")}</div><div class="navbuttons"><button class="btn" onclick="tab('offer',document.querySelectorAll('.nav button')[1])">← Offer</button><button class="btn primary" onclick="finishCopy()">✨ Generate Complete Funnel</button><button class="btn" onclick="quickGenerate()">⚡ Generate with AI / Local Fallback</button></div></div>`}
+function finishCopy(){S.story=document.getElementById("story").value.trim();S.next=S.next||"Confirmation Page Only";generate()}
+async function quickGenerate(){if(document.getElementById("strategy")){qs.forEach(k=>{let el=document.getElementById("s_"+k);if(el)S[k]=el.value.trim()});let g=document.getElementById("s_goal");if(g)S.goal=g.value}infer();S.story=S.story||"";S.next=S.next||"Confirmation Page Only";await generate()}
+function localGenerate(){infer();const p=S.product||"your offer", a=S.audience||"your ideal customer", prob=S.problem||"a frustrating problem", res=S.result||"a better result";S.copy={hero:`${res} — without ${prob.toLowerCase()}.`,sub:`A simple, compelling way for ${a} to move from problem to outcome with confidence.`,problemHead:`You don't need more noise. You need a better path to ${res.toLowerCase()}.`,solution:`${p} gives ${a} a practical way to move forward with less friction and more confidence.`,cta:S.next.includes("Book")?"Book My Free Strategy Session":S.next.includes("Apply")?"Start My Application":S.next.includes("Shop")?"Shop Now":`Get My Free ${S.freebie}`};S.pages=pagePlan();S.emails=makeEmails();S.sections=makeSections();S.generated=true}
+function makeEmails(){if(S.next.includes("Shop"))return[`Deliver ${S.freebie}`,`Why ${S.product||"the product"} is worth considering`,`How to choose the right option`,`Social proof and objections`,`Offer reminder`,`Abandoned cart reminder`,`Post-purchase welcome`];return[`Deliver ${S.freebie}`,`Why ${S.problem||"this problem"} matters`,`A simple way to improve the situation`,`Proof and common objections`,`Invite the next step`]}
+function makeSections(){return["Hero","Problem","Solution","Benefits","Offer / Pricing","Social Proof","How It Works","FAQ","Primary CTA","Footer"]}
+function pagePlan(){let a=["Freebie Landing Page"];if(S.next==="Book a Strategy / Discovery Call")a.push("Booking Page","Qualification Form","Thank You / Confirmation Page","3–5 Minute Confirmation Video","4-Email Follow-Up Sequence");else if(S.next==="Apply / Qualify")a.push("Application Page","Qualification Form","Thank You Page","Confirmation Video","5-Email Follow-Up Sequence");else if(S.next==="Shop / Checkout")a.push("Product / Sales Page","Checkout Page","Thank You Page","Post-Purchase Email Sequence");else a.push("Thank You / Confirmation Page","Confirmation Video","5-Email Follow-Up Sequence");return a}
+async function generate(){setStatus("Generating funnel…");try{infer();if(S.aiMode==="server"){const res=await fetch(S.endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({project:S,model:S.model})});if(!res.ok)throw new Error("AI endpoint returned "+res.status);const data=await res.json();applyAI(data);setStatus("AI funnel ready")}else{await new Promise(r=>setTimeout(r,450));localGenerate();setStatus("Local funnel ready")}S.generated=true;renderCopyResult();renderBlueprint();renderBuilder();renderPreview();toast("Complete funnel generated — live preview ready");tab("preview",document.querySelectorAll(".nav button")[1])}catch(e){console.error(e);localGenerate();setStatus("Local fallback used");renderCopyResult();renderBlueprint();renderBuilder();renderPreview();toast("AI unavailable — local generator completed the funnel");tab("preview",document.querySelectorAll(".nav button")[1])}}
+function applyAI(data){const d=data.project||data;Object.assign(S,d);S.pages=d.pages||pagePlan();S.copy=d.copy||{};S.emails=d.emails||makeEmails();S.sections=d.sections||makeSections();S.generated=true}
+function renderCopyResult(){const pages=S.pages.length?S.pages:pagePlan();document.getElementById("copy").innerHTML=`<div class="card"><span class="tag">Complete Funnel Copy Package</span><h1>${esc(S.offer)}</h1><p><b>Audience:</b> ${esc(S.audience)}<br><b>Funnel:</b> ${esc(S.funnel)}<br><b>Freebie:</b> ${esc(S.freebie)}</p><div class="result"><h3>Generated Assets</h3>${pages.map((p,i)=>`<div class="page"><b>${i+1}. ${esc(p)}</b><p>${esc(assetDescription(p))}</p></div>`).join("")}</div><div class="result"><h3>Hero Copy</h3><div class="copybox">${esc(S.copy.hero||"")}\n\n${esc(S.copy.sub||"")}</div><h3 style="margin-top:15px">Primary CTA</h3><div class="copybox">${esc(S.copy.cta||"")}</div><h3 style="margin-top:15px">Problem Section</h3><div class="copybox">${esc(S.copy.problemHead||"")}</div><h3 style="margin-top:15px">Solution</h3><div class="copybox">${esc(S.copy.solution||"")}</div></div><div class="result"><h3>Email Sequence</h3>${(S.emails||[]).map((e,i)=>`<p><b>Email ${i+1} — ${esc(e)}</b></p>`).join("")}</div><div class="navbuttons"><button class="btn primary" onclick="tab('blueprint',document.querySelectorAll('.nav button')[4])">Open Funnel Blueprint →</button><button class="btn" onclick="tab('builder',document.querySelectorAll('.nav button')[5])">Edit Visually →</button></div></div>`}
+function assetDescription(p){if(p.includes("Landing"))return"Headline, subheadline, problem, solution, benefits, proof, offer, FAQ and CTA.";if(p.includes("Booking"))return"Call promise, agenda, benefits, scheduling section and expectations.";if(p.includes("Qualification")||p.includes("Application"))return"High-intent questions for fit, urgency, budget, goals and buying context.";if(p.includes("Product"))return"Product promise, benefits, variants, proof, objections, pricing, shipping and CTA.";if(p.includes("Checkout"))return"Order summary, trust, payment, guarantee/returns and purchase CTA.";if(p.includes("Thank"))return"Confirmation, next steps, expectation setting and secondary CTA.";if(p.includes("Video"))return"3–5 minute welcome, value, expectations and next-step script.";return"Automated follow-up sequence aligned with the funnel goal."}
+function renderBlueprint(){document.getElementById("blueprint").innerHTML=`<div class="card"><span class="tag">Funnel Architecture</span><h1>Your Funnel Blueprint</h1><p>Generated from your offer and conversion goal.</p><div class="funnel">${(S.pages.length?S.pages:pagePlan()).map((x,i)=>`<div class="node">${esc(x)}</div>${i<(S.pages.length?S.pages:pagePlan()).length-1?'<div class="arrow">→</div>':''}`).join("")}</div><div class="result"><h3>Traffic → Conversion Strategy</h3><p>Traffic → ${esc(S.freebie)} → Landing Page → ${esc(S.next)} → Follow-up → ${esc(S.offer)}</p></div><button class="btn primary" onclick="tab('builder',document.querySelectorAll('.nav button')[5])">Open Drag & Drop Builder →</button></div>`}
+function renderPreview(){
+ const root=document.getElementById("preview");
+ const brand=S.brand||{}; const c=S.copy||{}; const p=S.product||"Your Product"; const a=S.audience||"your ideal customers";
+ const sections=(S.sections&&S.sections.length?S.sections:makeSections());
+ const hero=c.hero||`${S.result||"Get the result you want"}`;
+ const sub=c.sub||`A simple solution for ${a}.`;
+ const cta=c.cta||"Get Started Today";
+ const img=(S.assets&&S.assets[0])?`<img class="live-img" src="${S.assets[0]}" alt="${esc(p)}">`:"";
+ root.innerHTML=`<div class="preview-shell">
+   <div class="preview-toolbar"><div><span class="tag">LIVE CUSTOMER PREVIEW</span><b style="margin-left:8px">${esc(S.offer||p)}</b></div><div class="preview-actions"><button class="btn" onclick="setPreviewDevice('desktop')">Desktop</button><button class="btn" onclick="setPreviewDevice('mobile')">Mobile</button><button class="btn primary" onclick="openEditor()">✏️ Edit Funnel</button></div></div>
+   <div id="liveFrame" class="live-frame desktop">
+    <div class="live-site" style="font-family:${esc(brand.font||'Inter,Arial,sans-serif')}">
+      <header class="live-nav"><div class="live-logo">${esc(S.business||p)}</div><a href="#offer">Offer</a><a href="#faq">FAQ</a><button class="live-mini" onclick="liveCTA()">${esc(cta)}</button></header>
+      <section class="live-hero"><div class="hero-copy"><span class="live-kicker">${esc(S.industry||"A better way forward")}</span><h1 contenteditable="true" data-field="hero">${esc(hero)}</h1><p contenteditable="true" data-field="sub">${esc(sub)}</p><div class="live-ctas"><button class="live-cta" onclick="liveCTA()" contenteditable="true">${esc(cta)}</button><button class="live-secondary" onclick="scrollToSection('offer')">See The Offer ↓</button></div></div>${img||`<div class="hero-art"><div class="art-card"><span>✦</span><b>${esc(p)}</b><small>${esc(S.price||"Premium offer")}</small></div></div>`}</section>
+      ${sections.map((name,i)=>renderLiveSection(name,i)).join("")}
+      <footer class="live-footer">© ${new Date().getFullYear()} ${esc(S.business||"Your Brand")} · Built with BrandFlow</footer>
+    </div>
+   </div>
+ </div>`;
+ root.querySelectorAll('[contenteditable="true"]').forEach(el=>el.addEventListener('blur',()=>{const f=el.dataset.field;if(f){S.copy[f]=el.innerText.trim();save(false);toast("Copy updated")}}));
+}
+function renderLiveSection(name,i){const n=name.toLowerCase(); const id=n.includes('faq')?'faq':n.includes('offer')||n.includes('pricing')?'offer':n.replace(/[^a-z]/g,'')+i;
+ if(n.includes('hero'))return '';
+ if(n.includes('problem'))return `<section id="${id}" class="live-section"><span class="live-kicker">THE PROBLEM</span><h2 contenteditable="true">${esc(S.copy.problemHead||`Still struggling with ${S.problem||'the old way'}?`)}</h2><p contenteditable="true">${esc(S.problem||'Your customers have a problem. Your funnel should make the solution obvious.')}</p></section>`;
+ if(n.includes('solution'))return `<section id="${id}" class="live-section alt"><span class="live-kicker">THE SOLUTION</span><h2 contenteditable="true">A simpler path to ${esc(S.result||'the outcome you want')}</h2><p contenteditable="true">${esc(S.copy.solution||`${S.offer||p} is designed to help ${S.audience||'your customers'} move forward with confidence.`)}</p></section>`;
+ if(n.includes('benefit'))return `<section id="${id}" class="live-section"><span class="live-kicker">WHY IT WORKS</span><h2>Everything you need to get started</h2><div class="benefit-grid"><div><b>✓ Practical</b><p>Built around the outcome that matters.</p></div><div><b>✓ Simple</b><p>Clear steps without unnecessary friction.</p></div><div><b>✓ Supported</b><p>Guidance and a clear next step.</p></div></div></section>`;
+ if(n.includes('offer')||n.includes('pricing'))return `<section id="offer" class="live-section offer-section"><span class="live-kicker">YOUR OFFER</span><h2 contenteditable="true">${esc(S.offer||p)}</h2><p>${esc(S.inclusions||`A complete ${p} solution for ${S.audience||'your ideal customer'}.`)}</p><div class="price-card"><small>STARTING AT</small><strong>${esc(S.price||"Get a quote")}</strong><button class="live-cta" onclick="liveCTA()">${esc(cta)}</button></div></section>`;
+ if(n.includes('social')||n.includes('proof'))return `<section class="live-section alt"><span class="live-kicker">TRUST</span><h2>Built to make the decision easier</h2><blockquote contenteditable="true">“${esc(S.story||'Add a real customer testimonial or credibility statement here.')}”</blockquote></section>`;
+ if(n.includes('how'))return `<section class="live-section"><span class="live-kicker">HOW IT WORKS</span><h2>Simple from start to finish</h2><div class="steps"><div><b>01</b><p>Choose your option.</p></div><div><b>02</b><p>Complete the next step.</p></div><div><b>03</b><p>Get your desired result.</p></div></div></section>`;
+ if(n.includes('faq'))return `<section id="faq" class="live-section alt"><span class="live-kicker">FAQ</span><h2>Questions? We've got you covered.</h2><details open><summary>What do I get?</summary><p>${esc(S.inclusions||'Everything described in the offer.')}</p></details><details><summary>How does it work?</summary><p>Choose the option that fits you and follow the simple next step.</p></details><details><summary>When can I get started?</summary><p>${esc(S.timeline||'As soon as you complete the next step.')}</p></details></section>`;
+ if(n.includes('cta'))return `<section class="live-section final-cta"><h2 contenteditable="true">Ready to get started?</h2><p>Take the next step toward ${esc(S.result||'your desired outcome')}.</p><button class="live-cta" onclick="liveCTA()">${esc(cta)}</button></section>`;
+ return `<section class="live-section"><span class="live-kicker">${esc(name)}</span><h2 contenteditable="true">${esc(name)}</h2><p contenteditable="true">Edit this section directly in the preview.</p></section>`;
+}
+function setPreviewDevice(type){const f=document.getElementById('liveFrame');if(f)f.className='live-frame '+type}
+function scrollToSection(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'})}
+function liveCTA(){toast('CTA clicked — connect this button to checkout, booking, application or your next funnel step in Export.');}
+function openEditor(){tab('builder',document.querySelectorAll('.nav button')[5]);}
+function renderBuilder(){order=(S.sections&&S.sections.length?S.sections:makeSections()).slice();document.getElementById("builder").innerHTML=`<div class="card"><span class="tag">Visual Funnel Builder</span><h1>Drag, drop & edit</h1><p>Reorder sections, edit labels, change typography and preview your structure. Your project is saved locally.</p><div id="blocks">${order.map((x,i)=>block(x,i)).join("")}</div><div class="navbuttons"><button class="btn" onclick="addBlock()">＋ Add Section</button><button class="btn" onclick="tab('brand',document.querySelectorAll('.nav button')[8])">🎨 Brand Kit</button><button class="btn primary" onclick="tab('doctor',document.querySelectorAll('.nav button')[6])">🔍 Analyze Funnel</button></div></div>`}
+function block(x,i){return `<div class="block" draggable="true" ondragstart="dragStart(event,${i})" ondragend="dragEnd(event)" ondragover="event.preventDefault()" ondrop="dropBlock(${i})"><b>⠿ ${esc(x)}</b><span style="float:right"><button class="btn" onclick="editBlock(${i})">Edit</button> <button class="btn danger" onclick="deleteBlock(${i})">Delete</button></span><br><small>Drag to reorder this funnel section</small></div>`}
+let dragIndex=null;function dragStart(e,i){dragIndex=i;e.currentTarget.classList.add("dragging")}function dragEnd(e){e.currentTarget.classList.remove("dragging")}function dropBlock(i){if(dragIndex===null)return;const x=order.splice(dragIndex,1)[0];order.splice(i,0,x);S.sections=order.slice();dragIndex=null;renderBuilder()}function addBlock(){order.push("Custom Section");S.sections=order.slice();renderBuilder()}function deleteBlock(i){order.splice(i,1);S.sections=order.slice();renderBuilder()}function editBlock(i){let v=prompt("Section name:",order[i]);if(v&&v.trim()){order[i]=v.trim();S.sections=order.slice();renderBuilder()}}
+function renderDoctor(){const base=[["Offer clarity",S.offer?92:55],["Audience clarity",S.audience?95:55],["Headline",S.copy.hero?90:60],["CTA",S.copy.cta?92:60],["Trust / proof",S.story?80:45],["Objection handling",S.copy.solution?82:55],["Conversion flow",S.pages.length?92:50],["Mobile UX",90]];document.getElementById("doctor").innerHTML=`<div class="card"><span class="tag">Funnel Doctor</span><h1>Conversion Health Check</h1><p>BrandFlow checks the strategy and generated structure for common conversion gaps.</p>${base.map(x=>`<div class="score-row"><div><b>${esc(x[0])}</b><div class="bar"><i style="width:${x[1]}%"></i></div></div><b>${x[1]}</b></div>`).join("")}<div class="result"><h3>Recommended improvements</h3><p>1. Add real customer proof near the primary CTA.</p><p>2. Make the main outcome specific and measurable where possible.</p><p>3. Handle the top purchase objection before the final CTA.</p></div><button class="btn primary" onclick="applyFixes()">✨ Fix Automatically</button></div>`}
+function applyFixes(){if(!S.story)S.story="Add your origin story, credibility and customer proof here.";if(!S.inclusions)S.inclusions="Core offer, support, proof, bonus and clear next step";S.sections=[...new Set((S.sections||makeSections()).concat(["Trust / Proof","Objection Handling"]))];save(false);renderDoctor();toast("Optimization suggestions added")}
+function renderAssets(){document.getElementById("assets").innerHTML=`<div class="card"><span class="tag">Assets</span><h1>Upload your visuals</h1><p>Upload logos, product photos, screenshots and testimonials. They remain local to this browser unless you connect your own storage.</p><input type="file" multiple accept="image/*" onchange="preview(event)"><div id="previews" class="preview-grid"></div></div>`}
+function preview(e){const b=document.getElementById("previews");b.innerHTML="";S.assets=[];[...e.target.files].slice(0,12).forEach(f=>{const r=new FileReader();r.onload=()=>{S.assets.push(r.result);b.innerHTML+=`<img src="${r.result}" title="${esc(f.name)}">`;save(false);if(S.generated)renderPreview()};r.readAsDataURL(f)})}
+function renderBrand(){document.getElementById("brand").innerHTML=`<div class="card"><span class="tag">Brand Kit</span><h1>Design controls</h1><div class="grid2"><div class="field"><label>Primary color</label><input id="bp" type="color" value="${esc(S.brand.primary)}"></div><div class="field"><label>Secondary color</label><input id="bs" type="color" value="${esc(S.brand.secondary)}"></div></div><div class="field"><label>Font family</label><select id="bf">${["Inter,Arial,sans-serif","Georgia,serif","Arial,sans-serif","Verdana,sans-serif","Trebuchet MS,sans-serif","Courier New,monospace"].map(x=>`<option ${S.brand.font===x?"selected":""}>${x}</option>`).join("")}</select></div><p>Recommended: Inter for modern SaaS, Georgia for editorial/luxury, Arial for clean direct-response pages.</p><button class="btn primary" onclick="applyBrand()">Apply Brand Kit</button></div>`}
+function applyBrand(){S.brand.primary=document.getElementById("bp").value;S.brand.secondary=document.getElementById("bs").value;S.brand.font=document.getElementById("bf").value;document.documentElement.style.setProperty("--brand",S.brand.primary);document.documentElement.style.setProperty("--accent",S.brand.secondary);document.documentElement.style.setProperty("--font",S.brand.font);save(false);toast("Brand kit applied")}
+function renderSettings(){document.getElementById("settings").innerHTML=`<div class="card"><span class="tag">AI Connection</span><h1>Connect your AI backend</h1><p>For a real AI connection, use the included server.js proxy. Never put a production API key directly into browser code.</p><div class="field"><label>Mode</label><select id="aimode"><option value="local" ${S.aiMode==="local"?"selected":""}>Local generator (works offline)</option><option value="server" ${S.aiMode==="server"?"selected":""}>Server AI endpoint</option></select></div><div class="field"><label>Endpoint</label><input id="endpoint" value="${esc(S.endpoint)}"></div><div class="field"><label>Model</label><input id="model" value="${esc(S.model)}"></div><div class="result"><b>Recommended model:</b> gpt-5.6-luna for cost-sensitive, high-volume funnel generation.</div><button class="btn primary" onclick="saveSettings()">Save AI Settings</button></div>`}
+function saveSettings(){S.aiMode=document.getElementById("aimode").value;S.endpoint=document.getElementById("endpoint").value.trim()||"/api/generate";S.model=document.getElementById("model").value.trim()||"gpt-5.6-luna";save(false);setStatus(S.aiMode==="server"?"Server AI configured":"Local generator ready");toast("AI settings saved")}
+function renderExport(){document.getElementById("export").innerHTML=`<div class="card"><span class="tag">Export</span><h1>Publish your funnel</h1><p>Export the strategy and generated funnel package. Live publishing still requires the destination platform's API or import process.</p><div class="choices">${["Systeme.io","GoHighLevel","HTML","JSON","Copy Package"].map(x=>`<div class="choice" onclick="exportChoice('${x}')">${x}</div>`).join("")}</div><div class="result"><h3>Systeme.io implementation</h3><p>1. Create funnel → 2. Create pages → 3. Add forms → 4. Create tags → 5. Create email campaign → 6. Connect automations → 7. Add checkout/calendar → 8. Test → 9. Publish.</p></div></div>`}
+function exportChoice(x){const data={brand:S.brand,strategy:{business:S.business,industry:S.industry,product:S.product,audience:S.audience,problem:S.problem,result:S.result,price:S.price,goal:S.goal},offer:S.offer,inclusions:S.inclusions,timeline:S.timeline,freebie:S.freebie,story:S.story,funnel:S.funnel,next:S.next,pages:S.pages,copy:S.copy,emails:S.emails,sections:S.sections};const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="brandflow-funnel-"+x.toLowerCase().replace(/[^a-z]+/g,"-")+".json";a.click()}
+function save(show=true){localStorage.brandflowV14=JSON.stringify(S);if(show)toast("Project saved in this browser")}
+function load(){try{Object.assign(S,JSON.parse(localStorage.brandflowV14||"{}"))}catch{}document.documentElement.style.setProperty("--brand",S.brand.primary);document.documentElement.style.setProperty("--accent",S.brand.secondary);document.documentElement.style.setProperty("--font",S.brand.font)}
+function chat(){const v=document.getElementById("chatInput").value.trim();if(!v)return;const c=document.getElementById("chat");c.innerHTML+=`<div class="msg user">${esc(v)}</div>`;let reply="I can apply that instruction to the next generation. For example, say “make the offer more premium”, “add urgency”, “create a family-focused angle”, or “make the CTA stronger”.";if(/premium|luxury/i.test(v)){S.result=S.result+" with a more premium customer experience.";reply="I’ll use a more premium positioning. Generate the funnel again to apply it across the package."}if(/cta/i.test(v)){S.copy.cta="Get Started Today";reply="CTA updated to “Get Started Today”."}if(/headline|hero/i.test(v)){S.copy.hero=`${S.result||"Get the result you want"} — designed for ${S.audience||"your ideal customer"}.`;reply="Hero copy updated."}c.innerHTML+=`<div class="msg">${esc(reply)}</div>`;document.getElementById("chatInput").value="";c.scrollTop=c.scrollHeight}
+load();renderStrategy();
+</script>
+
+<style>
+/* BrandFlow V15 Visual Editor */
+#bf15-inspector{position:fixed;right:16px;top:72px;width:300px;max-height:calc(100vh - 88px);overflow:auto;background:#fff;border:1px solid #ddd;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.15);z-index:99999;padding:14px;display:none;font:14px system-ui}
+#bf15-inspector h3{margin:0 0 10px;font-size:16px}
+#bf15-inspector label{display:block;margin:10px 0 5px;font-weight:600}
+#bf15-inspector input,#bf15-inspector select,#bf15-inspector textarea{width:100%;box-sizing:border-box;padding:8px;border:1px solid #ccc;border-radius:8px}
+#bf15-inspector textarea{min-height:70px;resize:vertical}
+#bf15-inspector .bf15-row{display:flex;gap:7px}
+#bf15-inspector button{margin-top:8px;border:0;border-radius:8px;padding:8px 10px;cursor:pointer}
+.bf15-selected{outline:2px solid #29655f!important;outline-offset:2px}
+#bf15-toolbar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#111;color:#fff;border-radius:14px;padding:8px;display:flex;gap:7px;z-index:100000;box-shadow:0 8px 30px rgba(0,0,0,.25);font:13px system-ui}
+#bf15-toolbar button{background:#2b2b2b;color:#fff;border:0;border-radius:8px;padding:8px 11px;cursor:pointer}
+#bf15-status{position:fixed;left:18px;bottom:18px;background:#fff;border:1px solid #ddd;border-radius:10px;padding:8px 12px;z-index:100000;font:12px system-ui}
+</style>
+<div id="bf15-inspector">
+  <h3>Element Inspector</h3>
+  <div id="bf15-type"></div>
+  <label>Text</label><textarea id="bf15-text"></textarea>
+  <label>Font</label><select id="bf15-font">
+    <option value="">Inherit</option><option>Inter</option><option>Arial</option><option>Georgia</option><option>Montserrat</option><option>Playfair Display</option><option>Poppins</option><option>Roboto</option><option>DM Sans</option>
+  </select>
+  <div class="bf15-row">
+    <div style="flex:1"><label>Font size</label><input id="bf15-size" type="number" min="8" max="120"></div>
+    <div style="flex:1"><label>Radius</label><input id="bf15-radius" type="number" min="0" max="80"></div>
+  </div>
+  <label>Text color</label><input id="bf15-color" type="color" value="#111111">
+  <label>Background</label><input id="bf15-bg" type="color" value="#ffffff">
+  <div class="bf15-row">
+    <button id="bf15-bold">Bold</button><button id="bf15-delete">Delete</button>
+  </div>
+  <button id="bf15-done" style="width:100%;background:#29655f;color:white">Done</button>
+</div>
+<div id="bf15-toolbar">
+  <button id="bf15-undo">↶ Undo</button>
+  <button id="bf15-redo">↷ Redo</button>
+  <button id="bf15-addtext">＋ Text</button>
+  <button id="bf15-addsection">＋ Section</button>
+  <button id="bf15-save">Save</button>
+  <button id="bf15-export">Export HTML</button>
+</div>
+<div id="bf15-status">V15 Visual Editor ready</div>
+<script>
+(function(){
+  const I=document.getElementById('bf15-inspector'), T=document.getElementById('bf15-text'),
+        F=document.getElementById('bf15-font'), S=document.getElementById('bf15-size'),
+        R=document.getElementById('bf15-radius'), C=document.getElementById('bf15-color'),
+        B=document.getElementById('bf15-bg'), TYPE=document.getElementById('bf15-type'),
+        status=document.getElementById('bf15-status');
+  let selected=null, undo=[], redo=[];
+  function editableRoots(){
+    return [...document.body.querySelectorAll('h1,h2,h3,h4,h5,p,span,button,a,img,section,article,.card,.hero')].filter(e=>!e.closest('#bf15-inspector,#bf15-toolbar,#bf15-status'));
+  }
+  function snapshot(){ undo.push(document.body.innerHTML); if(undo.length>30) undo.shift(); redo=[]; }
+  function show(e){
+    if(!e) return; selected=e; e.classList.add('bf15-selected'); I.style.display='block';
+    TYPE.textContent=e.tagName.toLowerCase();
+    T.value=e.innerText||''; F.value=e.style.fontFamily.replaceAll('"','')||'';
+    S.value=parseInt(getComputedStyle(e).fontSize)||16; R.value=parseInt(getComputedStyle(e).borderRadius)||0;
+    try{C.value=rgb(getComputedStyle(e).color)}catch(_){}
+    try{B.value=rgb(getComputedStyle(e).backgroundColor)}catch(_){}
+  }
+  function rgb(v){
+    const m=v.match(/\d+/g); if(!m)return '#ffffff';
+    return '#'+m.slice(0,3).map(x=>Number(x).toString(16).padStart(2,'0')).join('');
+  }
+  document.addEventListener('click',e=>{
+    if(e.target.closest('#bf15-inspector,#bf15-toolbar,#bf15-status'))return;
+    const root=e.target.closest('h1,h2,h3,h4,h5,p,span,button,a,img,section,article,.card,.hero');
+    if(root){e.preventDefault();e.stopPropagation(); if(selected)selected.classList.remove('bf15-selected'); show(root);}
+  },true);
+  T.oninput=()=>{if(selected){snapshot();selected.innerText=T.value}};
+  F.onchange=()=>{if(selected){snapshot();selected.style.fontFamily=F.value}};
+  S.oninput=()=>{if(selected)selected.style.fontSize=S.value+'px'};
+  R.oninput=()=>{if(selected)selected.style.borderRadius=R.value+'px'};
+  C.oninput=()=>{if(selected)selected.style.color=C.value};
+  B.oninput=()=>{if(selected)selected.style.background=C.value=B.value};
+  document.getElementById('bf15-bold').onclick=()=>{if(selected){snapshot();selected.style.fontWeight=selected.style.fontWeight==='700'?'400':'700'}};
+  document.getElementById('bf15-delete').onclick=()=>{if(selected){snapshot();selected.remove();selected=null;I.style.display='none'}};
+  document.getElementById('bf15-done').onclick=()=>{if(selected)selected.classList.remove('bf15-selected');selected=null;I.style.display='none'};
+  document.getElementById('bf15-addtext').onclick=()=>{snapshot();let p=document.createElement('p');p.innerText='Double-click to edit this text';p.style.padding='12px';p.style.margin='10px';p.style.cursor='text';(document.querySelector('main')||document.body).appendChild(p);show(p)};
+  document.getElementById('bf15-addsection').onclick=()=>{snapshot();let s=document.createElement('section');s.innerHTML='<h2>New Section</h2><p>Add your content here.</p>';s.style.padding='48px 24px';s.style.margin='10px 0';s.style.border='1px dashed #bbb';(document.querySelector('main')||document.body).appendChild(s);show(s)};
+  document.getElementById('bf15-undo').onclick=()=>{if(undo.length){redo.push(document.body.innerHTML);document.body.innerHTML=undo.pop();status.textContent='Undo applied'}};
+  document.getElementById('bf15-redo').onclick=()=>{if(redo.length){undo.push(document.body.innerHTML);document.body.innerHTML=redo.pop();status.textContent='Redo applied'}};
+  document.getElementById('bf15-save').onclick=()=>{localStorage.setItem('brandflow_v15_html',document.documentElement.outerHTML);status.textContent='Saved locally ✓';setTimeout(()=>status.textContent='V15 Visual Editor ready',1800)};
+  document.getElementById('bf15-export').onclick=()=>{
+    const clone=document.documentElement.cloneNode(true);
+    clone.querySelector('#bf15-inspector')?.remove();clone.querySelector('#bf15-toolbar')?.remove();clone.querySelector('#bf15-status')?.remove();
+    const blob=new Blob(['<!doctype html>'+clone.outerHTML],{type:'text/html'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='brandflow-funnel.html';a.click();URL.revokeObjectURL(a.href);
+  };
+  // Load saved design if present
+  try{const saved=localStorage.getItem('brandflow_v15_html'); if(saved && location.hash==='#load-saved') document.open(),document.write(saved),document.close()}catch(_){}
+})();
+</script>
+
+
+<style>
+#v16panel{position:fixed;right:14px;top:70px;width:300px;max-height:calc(100vh - 85px);overflow:auto;background:#fff;border:1px solid #d9e2df;border-radius:14px;box-shadow:0 12px 35px rgba(0,0,0,.16);z-index:99990;padding:15px;font:13px system-ui;display:none}
+#v16panel h3{margin:0 0 10px}.v16f{margin:9px 0}.v16f label{display:block;font-weight:700;margin-bottom:4px}.v16f input,.v16f select,.v16f textarea{width:100%;box-sizing:border-box;padding:8px;border:1px solid #ccd6d3;border-radius:8px}.v16f textarea{min-height:65px}
+.v16actions{display:flex;gap:6px;flex-wrap:wrap}.v16actions button{border:0;border-radius:8px;padding:8px 10px;cursor:pointer}.v16primary{background:#29655f;color:white}
+.v16sel{outline:2px solid #29655f!important;outline-offset:3px}
+#v16components{position:fixed;left:250px;top:62px;background:#fff;border:1px solid #d9e2df;border-radius:12px;padding:8px;z-index:99980;display:none;box-shadow:0 8px 25px rgba(0,0,0,.12)}
+.v16chip{display:inline-block;padding:7px 9px;margin:3px;background:#f2f7f5;border-radius:8px;cursor:grab}
+#v16imageInput{display:none}
+</style>
+<div id="v16panel">
+<h3>✦ Element Inspector</h3><div id="v16kind">Select an element</div>
+<div class="v16f"><label>Text</label><textarea id="v16txt"></textarea></div>
+<div class="v16f"><label>Font</label><select id="v16font"><option value="">Brand default</option><option>Inter</option><option>Arial</option><option>Montserrat</option><option>Poppins</option><option>Roboto</option><option>DM Sans</option><option>Playfair Display</option><option>Georgia</option></select></div>
+<div class="v16actions"><div class="v16f" style="flex:1"><label>Size</label><input id="v16size" type="number" min="8" max="120"></div><div class="v16f" style="flex:1"><label>Weight</label><select id="v16weight"><option>400</option><option>500</option><option>600</option><option>700</option><option>800</option></select></div></div>
+<div class="v16actions"><div class="v16f" style="flex:1"><label>Text</label><input id="v16color" type="color"></div><div class="v16f" style="flex:1"><label>Background</label><input id="v16bg" type="color"></div></div>
+<div class="v16actions"><div class="v16f" style="flex:1"><label>Padding</label><input id="v16pad" type="number"></div><div class="v16f" style="flex:1"><label>Radius</label><input id="v16rad" type="number"></div></div>
+<div class="v16f"><label>Button / Link URL</label><input id="v16url" placeholder="#offer or https://..."></div>
+<div class="v16actions"><button id="v16dup">Duplicate</button><button id="v16del">Delete</button><button id="v16close" class="v16primary">Done</button></div>
+</div>
+<div id="v16components"><b>Components</b><span class="v16chip" data-v16="heading">Heading</span><span class="v16chip" data-v16="text">Text</span><span class="v16chip" data-v16="button">Button</span><span class="v16chip" data-v16="image">Image</span><span class="v16chip" data-v16="testimonial">Testimonial</span><span class="v16chip" data-v16="faq">FAQ</span><span class="v16chip" data-v16="cta">CTA</span></div>
+<input id="v16imageInput" type="file" accept="image/*">
+<script>
+let v16sel=null,v16hist=[],v16future=[];
+function v16snap(){v16hist.push(document.getElementById('preview').innerHTML);if(v16hist.length>30)v16hist.shift();v16future=[]}
+function v16rgb(v){let m=(v||'').match(/\d+/g);return m&&m.length>=3?'#'+m.slice(0,3).map(x=>(+x).toString(16).padStart(2,'0')).join(''):'#ffffff'}
+function v16pick(e){if(!e||e.closest('#v16panel,#v16components,.preview-toolbar'))return;if(v16sel)v16sel.classList.remove('v16sel');v16sel=e;v16sel.classList.add('v16sel');let cs=getComputedStyle(e);document.getElementById('v16panel').style.display='block';document.getElementById('v16kind').textContent=e.tagName.toLowerCase();document.getElementById('v16txt').value=e.innerText||'';document.getElementById('v16font').value=(e.style.fontFamily||'').replaceAll('"','').split(',')[0];document.getElementById('v16size').value=parseInt(cs.fontSize)||16;document.getElementById('v16weight').value=cs.fontWeight||400;document.getElementById('v16color').value=v16rgb(cs.color);document.getElementById('v16bg').value=v16rgb(cs.backgroundColor);document.getElementById('v16pad').value=parseInt(cs.padding)||0;document.getElementById('v16rad').value=parseInt(cs.borderRadius)||0;document.getElementById('v16url').value=e.getAttribute('href')||''}
+document.addEventListener('click',e=>{if(document.getElementById('preview')?.contains(e.target)){let x=e.target.closest('h1,h2,h3,h4,p,blockquote,button,a,img,section,div');if(x)v16pick(x)}},true);
+function v16bind(id,fn){document.getElementById(id).oninput=()=>{if(v16sel)fn()}}
+v16bind('v16txt',()=>v16sel.innerText=document.getElementById('v16txt').value);
+v16bind('v16font',()=>v16sel.style.fontFamily=document.getElementById('v16font').value);
+v16bind('v16size',()=>v16sel.style.fontSize=document.getElementById('v16size').value+'px');
+v16bind('v16weight',()=>v16sel.style.fontWeight=document.getElementById('v16weight').value);
+v16bind('v16color',()=>v16sel.style.color=document.getElementById('v16color').value);
+v16bind('v16bg',()=>v16sel.style.backgroundColor=document.getElementById('v16bg').value);
+v16bind('v16pad',()=>v16sel.style.padding=document.getElementById('v16pad').value+'px');
+v16bind('v16rad',()=>v16sel.style.borderRadius=document.getElementById('v16rad').value+'px');
+document.getElementById('v16url').oninput=()=>{if(v16sel&&(v16sel.tagName==='A'||v16sel.tagName==='BUTTON')){if(v16sel.tagName==='A')v16sel.href=document.getElementById('v16url').value}};
+document.getElementById('v16dup').onclick=()=>{if(v16sel){v16snap();let n=v16sel.cloneNode(true);v16sel.after(n);v16pick(n)}};
+document.getElementById('v16del').onclick=()=>{if(v16sel){v16snap();v16sel.remove();v16sel=null;document.getElementById('v16panel').style.display='none'}};
+document.getElementById('v16close').onclick=()=>{if(v16sel)v16sel.classList.remove('v16sel');v16sel=null;document.getElementById('v16panel').style.display='none'};
+function v16component(type){
+v16snap();let e=document.createElement(type==='image'?'div':'section');e.className='live-section';
+if(type==='heading')e.innerHTML='<h2>New Headline</h2>';if(type==='text')e.innerHTML='<p>Add persuasive copy here.</p>';if(type==='button')e.innerHTML='<button class="live-cta">Get Started</button>';if(type==='image')e.innerHTML='<div class="hero-art"><div class="art-card"><b>Upload your image</b></div></div>';if(type==='testimonial')e.innerHTML='<blockquote>“Add a real customer testimonial here.”</blockquote>';if(type==='faq')e.innerHTML='<h2>Frequently Asked Questions</h2><details open><summary>What do I get?</summary><p>Describe the offer here.</p></details>';if(type==='cta')e.innerHTML='<h2>Ready to get started?</h2><p>Take the next step today.</p><button class="live-cta">Get Started</button>';document.querySelector('.live-site')?.appendChild(e);v16pick(e)}
+document.querySelectorAll('[data-v16]').forEach(x=>x.onclick=()=>v16component(x.dataset.v16));
+function v16save(){S.previewHTML=document.getElementById('liveFrame')?.innerHTML||'';save(false);localStorage.setItem('brandflow_v16_project',JSON.stringify(S));toast('V16 funnel saved ✓')}
+function v16export(){let frame=document.getElementById('liveFrame');if(!frame)return;let clone=frame.cloneNode(true);clone.querySelectorAll('.preview-toolbar').forEach(x=>x.remove());clone.querySelectorAll('.v16sel').forEach(x=>x.classList.remove('v16sel'));let doc='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(S.offer||S.product||'Funnel')+'</title><style>'+[...document.querySelectorAll('style')].map(x=>x.textContent).join('\\n')+'</style></head><body>'+clone.outerHTML+'</body></html>';let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([doc],{type:'text/html'}));a.download='brandflow-finished-funnel.html';a.click();toast('Finished funnel exported ✓')}
+</script>
+</body>
+</html>
