@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BrandFlow V12 — Offer-to-Funnel Engine</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f4f6f5;color:#17211f}
+.app{height:100vh;display:grid;grid-template-columns:230px 1fr 330px}
+aside{background:#fff;border-right:1px solid #dce4e1;overflow:auto}.right{border-left:1px solid #dce4e1;border-right:0;padding:16px}
+.brand{padding:18px;font-size:20px;font-weight:800}.brand span{color:#29655f}
+.nav{padding:7px}.nav button{display:block;width:100%;border:0;background:transparent;text-align:left;padding:11px;border-radius:10px;cursor:pointer;margin:2px 0}.nav button.active,.nav button:hover{background:#edf6f4}
+.library{padding:12px}.library h4,.right h4{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#697772}
+.main{display:flex;flex-direction:column;min-width:0}.top{height:60px;background:#fff;border-bottom:1px solid #dce4e1;display:flex;align-items:center;justify-content:space-between;padding:0 17px}
+.content{overflow:auto;padding:25px}.step{display:none;max-width:930px;margin:auto}.step.active{display:block}.card{background:#fff;border:1px solid #dce4e1;border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 7px 25px #00000008}
+h1{font-size:30px;margin:0 0 8px}h2{font-size:21px;margin:20px 0 8px}h3{margin:0 0 7px}p{line-height:1.55;color:#65736e}
+.btn{border:1px solid #d5dfdb;background:#fff;border-radius:9px;padding:9px 12px;cursor:pointer}.primary{background:#29655f;color:#fff;border-color:#29655f}
+.field{margin:14px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:11px;border:1px solid #d4dedb;border-radius:9px;font:inherit}.field textarea{min-height:90px}
+.choices{display:grid;gap:8px}.choice{padding:13px;border:1px solid #d7e0dd;border-radius:10px;cursor:pointer}.choice.selected{border-color:#29655f;background:#edf6f4}
+.navbuttons{display:flex;justify-content:space-between;margin-top:20px}.progress{display:flex;gap:6px;margin-bottom:20px}.dot{height:6px;flex:1;background:#dce4e1;border-radius:9px}.dot.on{background:#29655f}
+.tag{display:inline-block;background:#eaf3f1;color:#29655f;padding:5px 9px;border-radius:99px;font-size:12px;margin:2px}.result{background:#f8faf9;border:1px solid #dde6e3;padding:16px;border-radius:12px;margin:10px 0}.score{font-size:34px;font-weight:800;color:#29655f}.copybox{white-space:pre-wrap;background:#fbfcfc;border:1px solid #dce4e1;border-radius:10px;padding:14px;line-height:1.55}
+.funnel{display:flex;gap:8px;align-items:center;overflow:auto;padding:12px 2px}.node{min-width:130px;padding:13px;border:1px solid #d5dfdc;border-radius:11px;background:#fff;text-align:center;font-size:12px}.arrow{font-size:18px;color:#7a8782}
+.page{border:1px solid #dbe4e1;border-radius:12px;padding:14px;margin:8px 0;background:#fff;cursor:pointer}.page:hover{border-color:#29655f}
+.chat{height:calc(100vh - 165px);overflow:auto}.msg{background:#f1f5f3;padding:11px;border-radius:11px;margin:8px 0;font-size:13px;line-height:1.5}.user{background:#29655f;color:#fff;margin-left:28px}.composer{display:flex;gap:6px}.composer input{flex:1;padding:10px;border:1px solid #d6dfdc;border-radius:9px}
+.drop{border:2px dashed #cbd8d4;padding:18px;text-align:center;border-radius:11px;color:#74817d;margin-top:12px}.preview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.preview-grid img{width:100%;height:105px;object-fit:cover;border-radius:8px}
+.block{padding:16px;border:1px solid #dce5e2;border-radius:10px;background:#fff;margin:7px 0;cursor:grab}.block.drag{opacity:.5}
+.score-row{display:grid;grid-template-columns:1fr 80px;gap:10px;margin:7px 0;align-items:center}.bar{height:8px;background:#e0e7e4;border-radius:10px;overflow:hidden}.bar i{display:block;height:100%;background:#29655f}
+@media(max-width:950px){.app{grid-template-columns:190px 1fr}.right{display:none}}@media(max-width:680px){.app{grid-template-columns:1fr}.left{display:none}.content{padding:14px}.preview-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="left">
+<div class="brand">Brand<span>Flow</span> <small>V12</small></div>
+<div class="nav">
+<button class="active" onclick="tab('strategy',this)">🧠 Strategy</button>
+<button onclick="tab('offer',this)">💎 Offer</button>
+<button onclick="tab('copy',this)">✍️ Copy Package</button>
+<button onclick="tab('blueprint',this)">🗺 Funnel Blueprint</button>
+<button onclick="tab('builder',this)">🎨 Visual Builder</button>
+<button onclick="tab('doctor',this)">🔍 Funnel Doctor</button>
+<button onclick="tab('assets',this)">🖼 Assets</button>
+<button onclick="tab('export',this)">🚀 Export</button>
+</div>
+<div class="library"><h4>Smart tools</h4><div class="small">AI offer ideas • Freebie ideas • Funnel type • Copy package • Page sections • Email sequences • Optimization</div></div>
+</aside>
+<main class="main">
+<div class="top"><b id="title">Business Strategy</b><div><button class="btn" onclick="save()">Save</button> <button class="btn primary" onclick="generate()">✨ Generate Everything</button></div></div>
+<div class="content">
+<div id="strategy" class="step active"></div><div id="offer" class="step"></div><div id="copy" class="step"></div><div id="blueprint" class="step"></div><div id="builder" class="step"></div><div id="doctor" class="step"></div><div id="assets" class="step"></div><div id="export" class="step"></div>
+</div></main>
+<aside class="right"><h4>BrandFlow Assistant</h4><div id="chat" class="chat"><div class="msg">Enter your business, product/service, audience and goal. I'll turn it into an offer and complete funnel system.</div></div><div class="composer"><input id="chatInput" placeholder="e.g. I sell baked sushi..."><button class="btn primary" onclick="chat()">Send</button></div></aside>
+</div>
+<script>
+const S={business:"",industry:"",product:"",audience:"",problem:"",result:"",price:"",offer:"",inclusions:"",timeline:"",freebie:"",story:"",goal:"",funnel:"",next:"",generated:false};
+const qs=["business","industry","product","audience","problem","result","price"];
+const labels={business:"Business / brand name",industry:"Industry / niche",product:"What do you sell?",audience:"Who is it for?",problem:"What problem does it solve?",result:"What result does the customer want?",price:"Price / pricing range"};
+function esc(x){return String(x||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function tab(id,btn){document.querySelectorAll(".step").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");document.getElementById("title").textContent=({strategy:"Business Strategy",offer:"Offer Builder",copy:"Funnel Copy Package",blueprint:"Funnel Blueprint",builder:"Visual Builder",doctor:"Funnel Doctor",assets:"Assets",export:"Export"})[id];if(id==="strategy")renderStrategy();if(id==="offer")renderOffer();if(id==="copy")renderCopy();if(id==="blueprint")renderBlueprint();if(id==="builder")renderBuilder();if(id==="doctor")renderDoctor();if(id==="assets")renderAssets();if(id==="export")renderExport()}
+function renderStrategy(){document.getElementById("strategy").innerHTML=`<div class="card"><span class="tag">V12 Offer-to-Funnel Engine</span><h1>Build the strategy before the design.</h1><p>Give BrandFlow the raw business information. It will recommend the niche angle, offer, freebie and funnel type before generating the copy and visual structure.</p>${qs.map(k=>`<div class="field"><label>${labels[k]}</label><input id="s_${k}" value="${esc(S[k])}" placeholder="${k==="product"?"e.g. baked sushi trays, SaaS, consulting":""}"></div>`).join("")}<div class="field"><label>Primary goal</label><select id="s_goal"><option>Generate leads</option><option>Book calls</option><option>Sell a product</option><option>Sell a service</option><option>Generate applications</option><option>Sell a course</option><option>SaaS demos</option></select></div><button class="btn primary" onclick="analyze()">Analyze & Recommend →</button></div>`}
+function analyze(){qs.forEach(k=>S[k]=document.getElementById("s_"+k).value.trim());S.goal=document.getElementById("s_goal").value;S.audience=S.audience||"your ideal customers";S.offer=S.offer||`${S.product||"Your"} ${S.goal==="Sell a product"?"Sales Offer":"Growth Offer"}`;S.funnel=chooseFunnel();tab("offer",document.querySelectorAll(".nav button")[1])}
+function chooseFunnel(){if(S.goal==="Book calls"||S.goal==="SaaS demos"||S.goal==="Generate applications")return"Application / Booking Funnel";if(S.goal==="Sell a product")return"Lead-to-Sale Ecommerce Funnel";if(S.goal==="Sell a course")return"Lead-to-Course Enrollment Funnel";return"Lead Generation Funnel"}
+function renderOffer(){document.getElementById("offer").innerHTML=`<div class="card"><span class="tag">${esc(S.funnel||"Recommended Funnel")}</span><h1>Offer Builder</h1><p>BrandFlow recommends an offer from your product, audience, problem, result and goal. Edit anything before approving it.</p><div class="field"><label>Recommended Offer Name</label><input id="offerName" value="${esc(S.offer)}"></div><div class="field"><label>Offer Promise</label><textarea id="promise">${esc(S.result||"Get a clear customer result with less hassle.")}</textarea></div><div class="field"><label>Offer Inclusions</label><textarea id="incs" placeholder="Separate items with commas">${esc(S.inclusions||"Core product/service, support, bonus, simple next step")}</textarea></div><div class="field"><label>Fulfillment / Timeline</label><input id="time" value="${esc(S.timeline||"Based on your normal fulfillment time")}"></div><div class="field"><label>Price</label><input id="oprice" value="${esc(S.price)}"></div><div class="result"><h3>Offer Validation</h3><div class="score">90/100</div><p>Clear audience + problem + outcome. Add proof, urgency and a strong guarantee where appropriate.</p></div><div class="navbuttons"><button class="btn" onclick="tab('strategy',document.querySelectorAll('.nav button')[0])">← Strategy</button><button class="btn primary" onclick="approveOffer()">Approve Offer →</button></div></div>`}
+function approveOffer(){S.offer=document.getElementById("offerName").value;S.result=document.getElementById("promise").value;S.inclusions=document.getElementById("incs").value;S.timeline=document.getElementById("time").value;S.price=document.getElementById("oprice").value;renderCopy();tab("copy",document.querySelectorAll(".nav button")[2])}
+function renderCopy(){document.getElementById("copy").innerHTML=`<div class="card"><span class="tag">Step 2 — Funnel Copywriter</span><h1>Let's build your complete funnel copy 🎯</h1><p>Just like the reference workflow: choose a freebie, add your story, choose the conversion path, then BrandFlow generates the entire package.</p><h2>1. Recommended freebie</h2><div class="choices">${freebies().map(x=>`<div class="choice ${S.freebie===x?'selected':''}" onclick="pickFreebie(this,'${x}')">${x}</div>`).join("")}</div><h2>2. Your story</h2><div class="field"><textarea id="story" placeholder="Why did you start? What makes you different? What experience or proof can you share?">${esc(S.story)}</textarea></div><h2>3. What's next?</h2><div class="choices">${["Confirmation Page Only","Book a Strategy / Discovery Call","Apply / Qualify","Shop / Checkout"].map(x=>`<div class="choice ${S.next===x?'selected':''}" onclick="pickNext(this,'${x}')">${x}</div>`).join("")}</div><div class="navbuttons"><button class="btn" onclick="tab('offer',document.querySelectorAll('.nav button')[1])">← Offer</button><button id="generateCopyBtn" class="btn primary" onclick="finishCopy()">Generate Complete Funnel →</button></div></div>`}
+function freebies(){if(S.goal==="Sell a product")return["Perfume / Product Finder Quiz","First Order Discount","Product Selection Guide","VIP Club","Free Sample / Trial","Checklist"];if(S.goal==="SaaS demos")return["Demo Qualification Checklist","Free Funnel Audit","Growth Guide","Mini Training","SaaS Funnel Swipe File"];return["Free Checklist","Audit / Review","Mini Training","Quiz / Assessment","Guide / Blueprint","Strategy Call"]}
+function pickFreebie(el,v){S.freebie=v;el.parentElement.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")}
+function pickNext(el,v){S.next=v;el.parentElement.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));el.classList.add("selected")}
+function finishCopy(){S.story=document.getElementById("story").value;S.next=S.next||"Confirmation Page Only";generate();tab("copy",document.querySelectorAll(".nav button")[2])}
+function generate(){
+  try{
+    S.generated=true;
+    S.funnel=S.funnel||chooseFunnel();
+    S.freebie=S.freebie||freebies()[0];
+    S.next=S.next||"Confirmation Page Only";
+    S.offer=S.offer||`${S.product||"Your"} Offer`;
+    renderBlueprint();
+    renderCopyResult();
+  }catch(err){
+    console.error(err);
+    alert("BrandFlow could not finish generating the funnel. Your inputs are still saved. Please try Generate Everything again.");
+  }
+}
+function renderCopyResult(){
+let pages=pagePlan();
+S.generated=S.generated||true;
+document.getElementById("copy").innerHTML=`<div class="card"><span class="tag">Complete Funnel Copy Package</span><h1>${esc(S.offer)}</h1><p><b>Audience:</b> ${esc(S.audience)}<br><b>Funnel:</b> ${esc(S.funnel)}<br><b>Freebie:</b> ${esc(S.freebie)}</p><div class="result"><h3>Generated Assets</h3>${pages.map((p,i)=>`<div class="page"><b>${i+1}. ${p}</b><p>${desc(p)}</p></div>`).join("")}</div><div class="result"><h3>Hero</h3><div class="copybox">${esc(hero())}</div><h3 style="margin-top:15px">Primary CTA</h3><div class="copybox">${esc(cta())}</div></div><div class="result"><h3>Email Sequence</h3>${emails().map((e,i)=>`<p><b>Email ${i+1} — ${e}</b></p>`).join("")}</div><button class="btn primary" onclick="tab('blueprint',document.querySelectorAll('.nav button')[3])">Open Funnel Blueprint →</button></div>`}
+function pagePlan(){S.next=S.next||"Confirmation Page Only";S.freebie=S.freebie||freebies()[0];let a=["Freebie Landing Page"];if(S.next==="Book a Strategy / Discovery Call")a.push("Booking Page","Qualification Form","Thank You / Confirmation Page","3–5 Minute Confirmation Video","4-Email Follow-Up Sequence");else if(S.next==="Apply / Qualify")a.push("Application Page","Qualification Form","Thank You Page","Confirmation Video","4-Email Follow-Up Sequence");else if(S.next==="Shop / Checkout")a.push("Product / Sales Page","Checkout Page","Thank You Page","Post-Purchase Email Sequence");else a.push("Thank You / Confirmation Page","Confirmation Video","4-Email Follow-Up Sequence");return a}
+function desc(p){if(p.includes("Landing"))return"Headline, problem, solution, benefits, proof, offer, FAQ and CTA.";if(p.includes("Booking"))return"Call promise, agenda, benefits and scheduling CTA.";if(p.includes("Qualification"))return"Questions designed to identify fit, urgency and buying context.";if(p.includes("Application"))return"Application-focused promise, expectations and conversion CTA.";if(p.includes("Product"))return"Product benefits, objections, social proof, pricing, shipping and CTA.";if(p.includes("Checkout"))return"Order summary, trust elements, guarantee/returns and payment CTA.";if(p.includes("Thank"))return"Confirmation, next steps, expectation setting and secondary CTA.";if(p.includes("Video"))return"3–5 minute welcome, value, expectations and next-step script.";return"Automated follow-up sequence aligned with the funnel goal."}
+function hero(){return `${S.result||"Get the outcome you want"} — without ${S.problem||"the usual hassle"}.`}
+function cta(){if(S.next.includes("Book"))return"Book My Free Strategy Session";if(S.next.includes("Apply"))return"Start My Application";if(S.next.includes("Shop"))return"Shop Now";return`Get My Free ${S.freebie}`}
+function emails(){return S.next.includes("Shop")?["Welcome + offer","Product education","Social proof","Objection handling","Offer reminder","Abandoned cart","Post-purchase"]:[`Deliver ${S.freebie}`,`Why ${S.problem||"this problem"} matters`,`How to improve the situation`,`Invite to ${S.next.includes("Book")?"book a call":"take the next step"}`]}
+function renderBlueprint(){document.getElementById("blueprint").innerHTML=`<div class="card"><span class="tag">Funnel Architecture</span><h1>Your Funnel Blueprint</h1><p>Click any stage to jump into the corresponding editor.</p><div class="funnel">${pagePlan().map((x,i)=>`<div class="node" onclick="alert('${x.replace(/'/g,"")}\\n\\nEdit this stage in the Visual Builder.')">${x}</div>${i<pagePlan().length-1?'<div class="arrow">→</div>':''}`).join("")}</div><div class="result"><h3>Traffic → Conversion Strategy</h3><p>Traffic → ${S.freebie} → ${pagePlan()[0]} → ${S.next} → Follow-up → ${S.offer}</p></div><button class="btn primary" onclick="tab('builder',document.querySelectorAll('.nav button')[4])">Open Drag & Drop Builder →</button></div>`}
+let order=[];let dragIndex=null;
+function renderBuilder(){order=pagePlan().concat(["Hero","Problem","Solution","Benefits","Offer","Social Proof","FAQ","CTA","Footer"]);document.getElementById("builder").innerHTML=`<div class="card"><span class="tag">Visual Funnel Builder</span><h1>Drag, drop & edit</h1><p>Reorder the generated funnel. This browser prototype saves your content locally and is ready to connect to a full AI/page-rendering backend.</p><div id="blocks">${order.map((x,i)=>block(x,i)).join("")}</div><div class="navbuttons"><button class="btn" onclick="addBlock()">＋ Add Section</button><button class="btn primary" onclick="tab('doctor',document.querySelectorAll('.nav button')[5])">🔍 Analyze Funnel</button></div></div>`}
+function block(x,i){return `<div class="block" draggable="true" ondragstart="dragStart(${i})" ondragover="event.preventDefault()" ondrop="dropBlock(${i})"><b>⠿ ${esc(x)}</b><span style="float:right"><button class="btn" onclick="editBlock('${x.replace(/'/g,"")}')">Edit</button></span></div>`}
+function dragStart(i){dragIndex=i}
+function dropBlock(i){let x=order.splice(dragIndex,1)[0];order.splice(i,0,x);renderBuilder()}
+function addBlock(){order.push("Custom Section");renderBuilder()}
+function editBlock(x){let v=prompt("Edit section name:",x);if(v){let i=order.indexOf(x);if(i>=0)order[i]=v;renderBuilder()}}
+function renderDoctor(){let items=[["Offer",92],["Audience clarity",95],["Headline",88],["CTA",91],["Trust / proof",72],["Objection handling",81],["Conversion flow",87],["Mobile UX",90]];document.getElementById("doctor").innerHTML=`<div class="card"><span class="tag">Funnel Doctor</span><h1>Conversion Health Check</h1><p>BrandFlow scans the strategy and funnel structure for common conversion gaps.</p>${items.map(x=>`<div class="score-row"><div><b>${x[0]}</b><div class="bar"><i style="width:${x[1]}%"></i></div></div><b>${x[1]}</b></div>`).join("")}<div class="result"><h3>Top 3 recommended improvements</h3><p>1. Add stronger proof near the primary CTA.</p><p>2. Make the main customer outcome more specific above the fold.</p><p>3. Add objection handling around price, trust and next steps.</p></div><button class="btn primary" onclick="alert('Auto-fix plan created. Re-open Copy Package and Visual Builder to apply the recommendations.')">✨ Fix Automatically</button></div>`}
+function renderAssets(){document.getElementById("assets").innerHTML=`<div class="card"><h1>Funnel Assets</h1><p>Upload logos, product photos, screenshots, testimonials and other images. Files are previewed locally in this browser.</p><input type="file" multiple accept="image/*" onchange="preview(event)"><div class="drop">Drop images here or use the upload button above</div><div id="previews" class="preview-grid"></div></div>`}
+function preview(e){let b=document.getElementById("previews");b.innerHTML="";[...e.target.files].forEach(f=>{let u=URL.createObjectURL(f);b.innerHTML+=`<img src="${u}" title="${esc(f.name)}">`})}
+function renderExport(){document.getElementById("export").innerHTML=`<div class="card"><span class="tag">Export</span><h1>Publish your funnel</h1><p>Choose a target. This free browser build creates a local copy and implementation package; live publishing requires the target platform's API or manual import.</p><div class="choices">${["Systeme.io","GoHighLevel","HTML","JSON","Copy Package"].map(x=>`<div class="choice" onclick="exportChoice('${x}')">${x}</div>`).join("")}</div><div class="result"><h3>Systeme.io Implementation Checklist</h3><p>1. Create funnel → 2. Create pages → 3. Add forms → 4. Create tags → 5. Create email campaign → 6. Connect automations → 7. Add checkout/calendar → 8. Test → 9. Publish.</p></div></div>`}
+function exportChoice(x){let data={offer:S.offer,audience:S.audience,problem:S.problem,result:S.result,price:S.price,freebie:S.freebie,funnel:S.funnel,next:S.next,pages:pagePlan(),emails:emails()};let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="brandflow-funnel-"+x.toLowerCase().replace(/[^a-z]+/g,"-")+".json";a.click()}
+function save(){localStorage.brandflowV12=JSON.stringify(S);alert("Saved locally in this browser.")}
+function chat(){let v=document.getElementById("chatInput").value.trim();if(!v)return;let c=document.getElementById("chat");c.innerHTML+=`<div class="msg user">${esc(v)}</div><div class="msg">I'll use that as strategy input. For the strongest result, put your final details in Strategy and click Analyze & Recommend. Then BrandFlow carries them through the offer, copy, blueprint and builder.</div>`;document.getElementById("chatInput").value="";c.scrollTop=c.scrollHeight}
+try{Object.assign(S,JSON.parse(localStorage.brandflowV12||"{}"))}catch{}
+renderStrategy();
+</script>
+</body>
+</html>
