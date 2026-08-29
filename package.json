@@ -1,0 +1,7 @@
+{
+  "name":"brandflow-v13-ai",
+  "version":"13.0.0",
+  "type":"module",
+  "scripts":{"start":"node server.js"},
+  "dependencies":{"dotenv":"latest","express":"latest","openai":"latest"}
+}
