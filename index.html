@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BrandFlow V5 — Funnel Template Builder</title>
+<style>
+:root{--primary:#29655f;--sage:#dde8e3;--ivory:#f8f5ef;--gold:#c8a96b;--ink:#263331;--white:#fff;--muted:#66736f;--line:#dfe6e2}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:#eef2f0;color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.top{height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:5}
+.logo{font-weight:800;letter-spacing:.04em}.logo span{color:var(--primary)}
+.actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 13px}.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.app{display:grid;grid-template-columns:250px 1fr 300px;min-height:calc(100vh - 64px)}
+.side,.inspector{background:#fff;padding:18px;border-right:1px solid var(--line);overflow:auto}.inspector{border-left:1px solid var(--line);border-right:0}
+h3{margin:8px 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:.08em}.label{font-size:12px;color:var(--muted);margin:12px 0 5px;display:block}
+select,input,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px;background:#fff;color:var(--ink)}
+textarea{min-height:80px;resize:vertical}
+.tabs{display:flex;gap:6px;margin-bottom:14px}.tab{flex:1;padding:8px;border:1px solid var(--line);background:#fff;border-radius:8px}.tab.active{background:var(--sage);border-color:#bdd2ca}
+.library{display:grid;gap:8px}.tpl{padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff;text-align:left}.tpl:hover{border-color:var(--primary)}
+.tpl b{display:block;font-size:13px}.tpl small{color:var(--muted)}
+.canvas{padding:22px;overflow:auto}.devicebar{display:flex;justify-content:center;gap:6px;margin-bottom:14px}.devicebar button.active{background:var(--ink);color:#fff}.frame{margin:auto;background:#fff;box-shadow:0 8px 30px #20332a18;min-height:800px;transition:.2s}.desktop{width:min(100%,980px)}.mobile{width:390px}
+.section{position:relative;border:2px solid transparent;transition:.15s}.section:hover{border-color:#9abdb5}.section.selected{border-color:var(--primary)}.section-actions{position:absolute;right:8px;top:8px;display:none;gap:4px;z-index:2}.section:hover .section-actions,.section.selected .section-actions{display:flex}.mini{border:0;border-radius:7px;background:#fff;box-shadow:0 2px 8px #0002;padding:5px 7px}
+.hero{padding:80px 48px;background:var(--ivory)}.hero h1{font-family:Georgia,serif;font-size:52px;line-height:1.02;margin:10px 0}.hero p{max-width:570px;color:var(--muted);font-size:18px}.cta{display:inline-block;background:var(--primary);color:#fff;padding:13px 18px;border-radius:10px;text-decoration:none;margin-top:12px;font-weight:700}
+.block{padding:54px 42px}.sage{background:var(--sage)}.center{text-align:center}.block h2{font-family:Georgia,serif;font-size:32px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}.card{padding:20px;border:1px solid var(--line);border-radius:14px;background:#fff}.quote{font-size:20px;line-height:1.5;font-family:Georgia,serif}.faq{padding:18px 0;border-bottom:1px solid var(--line)}.offer{background:var(--primary);color:#fff;padding:55px 42px}.offer p{color:#e6f1ee}.offer .cta{background:#fff;color:var(--primary)}
+.inspector .empty{color:var(--muted);font-size:13px;line-height:1.5}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.danger{color:#a33;border-color:#ecc}
+@media(max-width:900px){.app{grid-template-columns:210px 1fr}.inspector{display:none}.grid{grid-template-columns:1fr}.hero h1{font-size:40px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="logo">Brand<span>Flow</span> <small>V5</small></div><div class="actions"><button class="btn" onclick="newProject()">New</button><button class="btn" onclick="saveProject()">Save</button><button class="btn" onclick="loadProject()">Load</button><button class="btn primary" onclick="exportHTML()">Export HTML</button></div></header>
+<div class="app">
+<aside class="side">
+<h3>Project</h3>
+<label class="label">Industry</label><select id="industry" onchange="setIndustry(this.value)"><option>Med Spa</option><option>SaaS</option><option>Real Estate</option><option>Restaurant</option><option>Fitness</option><option>Law Firm</option><option>E-commerce</option><option>Dental</option><option>Coaching</option></select>
+<label class="label">Positioning</label><select id="position"><option>Luxury</option><option>Modern</option><option>Professional</option><option>Friendly</option><option>Affordable</option><option>Bold</option></select>
+<label class="label">Business / Brand</label><input id="brand" value="Lumière Med Spa" oninput="updateMeta()">
+<label class="label">Offer</label><input id="offer" value="Complimentary Skin Consultation" oninput="updateMeta()">
+<h3 style="margin-top:24px">Section Library</h3>
+<div class="tabs"><button class="tab active" id="allTab" onclick="filterTpl('all')">All</button><button class="tab" id="industryTab" onclick="filterTpl('industry')">Industry</button></div>
+<div id="library" class="library"></div>
+</aside>
+
+<main class="canvas">
+<div class="devicebar"><button class="btn active" id="deskBtn" onclick="device('desktop')">Desktop</button><button class="btn" id="mobBtn" onclick="device('mobile')">Mobile</button></div>
+<div id="frame" class="frame desktop"></div>
+</main>
+
+<aside class="inspector">
+<h3>Inspector</h3><div id="inspector" class="empty">Select a section to edit it. You can reorder, duplicate, delete, and save sections.</div>
+</aside>
+</div>
+
+<script>
+const palettes={
+"Med Spa":["#29655f","#dde8e3","#f8f5ef","#c8a96b"],"SaaS":["#3157d5","#e8edff","#f7f9ff","#7c3aed"],
+"Real Estate":["#24333a","#e9edef","#faf8f4","#b89b5e"],"Restaurant":["#8b3f2f","#f5e6dc","#fffaf5","#c28b52"],
+"Fitness":["#173b3f","#dceff0","#f5f8f8","#d7a928"],"Law Firm":["#203447","#e5ebef","#f7f7f5","#a98952"],
+"E-commerce":["#5b35d5","#eee9ff","#faf9ff","#ef8b2e"],"Dental":["#197a8c","#e1f3f5","#f7fcfc","#4aa7b8"],"Coaching":["#684c8f","#eee7f4","#fbf8fc","#c69b64"]};
+const industrySections={
+"Med Spa":["Before & After","Treatment Cards","Testimonials","Booking CTA"],"SaaS":["Feature Grid","Pricing","Testimonials","Signup CTA"],
+"Real Estate":["Property Cards","Testimonials","Inquiry CTA"],"Restaurant":["Menu Cards","Gallery","Testimonials","Reservation CTA"],
+"Fitness":["Program Cards","Testimonials","Signup CTA"],"Law Firm":["Practice Areas","Credentials","Consultation CTA"],
+"E-commerce":["Product Grid","Benefits","Testimonials","Shop CTA"],"Dental":["Services","Testimonials","Booking CTA"],"Coaching":["Program Cards","Testimonials","Discovery CTA"]};
+const templates=[
+["Hero","hero","High-impact opening section"],["Benefits","block","Three benefit cards"],["Treatment Cards","cards","Med spa services / treatments"],["Feature Grid","cards","Feature or service grid"],["Program Cards","cards","Programs or offers"],["Property Cards","cards","Featured properties"],["Product Grid","cards","Featured products"],["Services","cards","Core services"],["Practice Areas","cards","Areas of expertise"],["Testimonials","quote","Social proof"],["Before & After","gallery","Visual results gallery"],["Gallery","gallery","Image-focused section"],["Pricing","pricing","Offer / pricing comparison"],["FAQ","faq","Objection handling"],["Booking CTA","offer","Appointment conversion CTA"],["Signup CTA","offer","Lead capture CTA"],["Shop CTA","offer","Purchase CTA"],["Reservation CTA","offer","Reservation CTA"],["Discovery CTA","offer","Discovery call CTA"],["Consultation CTA","offer","Consultation CTA"]];
+let project={brand:"Lumière Med Spa",industry:"Med Spa",position:"Luxury",offer:"Complimentary Skin Consultation",sections:[]};
+let selected=null,mode="all",deviceMode="desktop";
+function uid(){return Math.random().toString(36).slice(2,9)}
+function add(name){let t=templates.find(x=>x[0]===name)||templates[0];project.sections.push({id:uid(),name,type:t[1],title:defaultTitle(name),body:defaultBody(name),items:["Personalized experience","Expert guidance","Beautiful results"],button:defaultCTA(),image:""});render()}
+function defaultTitle(n){return ({Hero:"Your Skin. Elevated.",Benefits:"A more refined approach to aesthetic care.",["Treatment Cards"]:"Treatments designed around you.",["Feature Grid"]:"Everything you need to move forward.",["Program Cards"]:"Programs built for your goals.",["Property Cards"]:"Find your next opportunity.",["Product Grid"]:"Curated favorites.",Services:"Our Services",["Practice Areas"]:"How We Can Help",Testimonials:"Loved by our clients.",["Before & After"]:"Real results. Real confidence.",Gallery:"A look inside the experience.",Pricing:"Choose your experience.",FAQ:"Questions, answered.",["Booking CTA"]:"Ready to take the next step?",["Signup CTA"]:"Start your journey today.",["Shop CTA"]:"Make it yours.",["Reservation CTA"]:"Reserve your experience.",["Discovery CTA"]:"Let's build your next chapter.",["Consultation CTA"]:"Let's create your personalized plan."})[n]||n}
+function defaultBody(n){return n==="Hero"?"Personalized care, thoughtful expertise, and a premium experience designed around you.":n==="Testimonials"?"“The experience felt effortless, personal, and beautifully considered.”":n==="FAQ"?"Clear answers that remove hesitation and help visitors choose the right next step.":"Designed to communicate value clearly and move the right visitor toward action."}
+function defaultCTA(){let m={booking:"Book Your Consultation",signup:"Get Started",shop:"Shop Now",reservation:"Reserve Your Table",discovery:"Book a Discovery Call",consultation:"Book a Consultation"};let i=project.industry;if(["Restaurant"].includes(i))return m.reservation;if(["SaaS","Fitness","E-commerce"].includes(i))return i==="E-commerce"?m.shop:m.signup;if(i==="Coaching")return m.discovery;if(["Law Firm","Dental"].includes(i))return m.consultation;return m.booking}
+function renderLibrary(){let list=mode==="all"?templates:templates.filter(t=>industrySections[project.industry].includes(t[0])||t[0]==="Hero"||t[0]==="Benefits"||t[0]==="FAQ");document.getElementById("library").innerHTML=list.map(t=>`<button class="tpl" onclick="add('${t[0]}')"><b>＋ ${t[0]}</b><small>${t[2]}</small></button>`).join("")}
+function render(){document.documentElement.style.setProperty("--primary",palettes[project.industry][0]);document.documentElement.style.setProperty("--sage",palettes[project.industry][1]);document.documentElement.style.setProperty("--ivory",palettes[project.industry][2]);document.documentElement.style.setProperty("--gold",palettes[project.industry][3]);document.getElementById("frame").innerHTML=project.sections.map((s,i)=>sectionHTML(s,i)).join("");renderLibrary();renderInspector()}
+function sectionHTML(s,i){let cls=s.type==="hero"?"hero":s.type==="offer"?"offer":"block";let content=s.type==="cards"||s.type==="pricing"?`<div class="grid">${s.items.map(x=>`<div class="card"><b>${x}</b><p>${s.body}</p></div>`).join("")}</div>`:s.type==="quote"?`<p class="quote">${s.body}</p><small>Verified Client</small>`:s.type==="faq"?`<div class="faq"><b>What should I expect?</b><p>${s.body}</p></div><div class="faq"><b>How do I get started?</b><p>${s.body}</p></div>`:s.type==="gallery"?`<div class="grid"><div class="card">Result / Image 01</div><div class="card">Result / Image 02</div><div class="card">Result / Image 03</div></div>`:"";return `<section class="section ${selected===s.id?'selected':''}" onclick="selectSec('${s.id}',event)"><div class="section-actions"><button class="mini" onclick="moveSec('${s.id}',-1);event.stopPropagation()">↑</button><button class="mini" onclick="moveSec('${s.id}',1);event.stopPropagation()">↓</button><button class="mini" onclick="dupSec('${s.id}');event.stopPropagation()">⧉</button><button class="mini" onclick="delSec('${s.id}');event.stopPropagation()">×</button></div><div class="${cls} ${s.type==='offer'?'':''} ${s.type==='quote'?'center':''}"><div class="${s.type==='hero'||s.type==='offer'?'':'center'}"><h2>${s.title}</h2>${s.type==="hero"?"":""}<p>${s.body}</p>${content}<a class="cta">${s.button}</a></div></div></section>`}
+function selectSec(id,e){selected=id;render();e&&e.stopPropagation()}
+function renderInspector(){let box=document.getElementById("inspector"),s=project.sections.find(x=>x.id===selected);if(!s){box.innerHTML='<div class="empty">Select a section to edit it. You can reorder, duplicate, delete, and save sections.</div>';return}box.innerHTML=`<label class="label">Section</label><input value="${s.name}" disabled><label class="label">Title</label><textarea oninput="edit('title',this.value)">${s.title}</textarea><label class="label">Body</label><textarea oninput="edit('body',this.value)">${s.body}</textarea><label class="label">Button</label><input value="${s.button}" oninput="edit('button',this.value)"><label class="label">Items (one per line)</label><textarea oninput="edit('items',this.value.split('\\n'))">${s.items.join("\\n")}</textarea><button class="btn danger" style="margin-top:14px;width:100%" onclick="delSec('${s.id}')">Delete Section</button>`}
+function edit(k,v){let s=project.sections.find(x=>x.id===selected);if(s){s[k]=v;renderFrameOnly()}}
+function renderFrameOnly(){document.getElementById("frame").innerHTML=project.sections.map((s,i)=>sectionHTML(s,i)).join("")}
+function moveSec(id,d){let i=project.sections.findIndex(x=>x.id===id),j=i+d;if(j<0||j>=project.sections.length)return;[project.sections[i],project.sections[j]]=[project.sections[j],project.sections[i]];render()}
+function dupSec(id){let s=project.sections.find(x=>x.id===id);project.sections.splice(project.sections.indexOf(s)+1,0,{...s,id:uid(),title:s.title+" — Copy"});render()}
+function delSec(id){project.sections=project.sections.filter(x=>x.id!==id);selected=null;render()}
+function filterTpl(x){mode=x;document.getElementById("allTab").classList.toggle("active",x==="all");document.getElementById("industryTab").classList.toggle("active",x==="industry");renderLibrary()}
+function setIndustry(v){project.industry=v;document.getElementById("brand").value=v==="Med Spa"?"Lumière Med Spa":project.brand;render()}
+function updateMeta(){project.brand=document.getElementById("brand").value;project.offer=document.getElementById("offer").value}
+function device(v){deviceMode=v;let f=document.getElementById("frame");f.className="frame "+v;deskBtn.classList.toggle("active",v==="desktop");mobBtn.classList.toggle("active",v==="mobile")}
+function saveProject(){localStorage.setItem("brandflowV5",JSON.stringify(project));alert("Project saved in this browser.")}
+function loadProject(){let x=localStorage.getItem("brandflowV5");if(x){project=JSON.parse(x);sync();render()}else alert("No saved project found.")}
+function newProject(){if(confirm("Start a new project?")){project={brand:"New Brand",industry:"Med Spa",position:"Luxury",offer:"Your Offer",sections:[]};selected=null;sync();render()}}
+function sync(){industry.value=project.industry;position.value=project.position;brand.value=project.brand;offer.value=project.offer}
+function exportHTML(){let clone=document.documentElement.cloneNode(true);clone.querySelectorAll("script").forEach(x=>x.remove());let out="<!doctype html>\\n"+clone.outerHTML;let blob=new Blob([out],{type:"text/html"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(project.brand||"brandflow")+"-funnel.html";a.click()}
+function init(){sync();["Hero","Benefits","Treatment Cards","Testimonials","Before & After","FAQ","Booking CTA"].forEach(add)}
+init();
+</script>
+</body></html>
